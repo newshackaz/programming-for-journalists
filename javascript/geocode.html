@@ -18,7 +18,16 @@
       <!-- parse js -->
 			<script src="//www.parsecdn.com/js/parse-1.3.5.min.js"></script>
 
-    	<script>
+      <script>
+          function sleepFor(sleepDuration) {
+            var now = new Date().getTime();
+            while(new Date().getTime() < now + sleepDuration) {
+              /* do nothing */
+            }
+          }
+      </script>
+
+      <script>
       function bulkgeocode() {
 
         // initialize parse - application_id, javascript_key
@@ -31,7 +40,7 @@
         var query = new Parse.Query(row);
 
         // increase the number of allowed results
-        query.limit(150);
+        query.limit(100);
 
         // limit the rows that have not been geocoded yet
         query.equalTo("geopoint", undefined);
@@ -72,6 +81,7 @@
                   }
                 });
               })(i);
+              sleepFor(400);
             }
           },
           error: function(results, error) {
