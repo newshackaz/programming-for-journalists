@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<title>Geocode Parse Data</title>
+
+      <!-- jquery -->
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+    	<!-- custom styles -->
+    	<link rel="stylesheet" href="custom.css" />
+
+    	<!-- google maps js -->
+    	<script type="text/javascript" src="//maps.google.com/maps/api/js"></script>
+      <script type="text/javascript" src="gmaps.js"></script>
+
+      <!-- parse js -->
+			<script src="//www.parsecdn.com/js/parse-1.3.5.min.js"></script>
+
+    	<script>
+      function bulkgeocode() {
+
+        // initialize parse - application_id, javascript_key
+        Parse.initialize("APPLICATION_ID", "JAVASCRIPT_KEY");
+
+        // parse class
+        var row = Parse.Object.extend("PARSE_CLASS");
+
+        // create the parse query
+        var query = new Parse.Query(row);
+
+        // increase the number of allowed results
+        query.limit(150);
+
+        // limit the rows that have not been geocoded yet
+        query.equalTo("geopoint", undefined);
+
+        // run the query
+        query.find({
+          success: function(results) {
+						// parse returned at least one address, loop through them
+            for (var i = 0; i < results.length; i++) {
+              (function (y) {
+              	// create the full address to geocode
+              	var full_address;
+              	full_address = results[y].get('address') + ", " + results[y].get('city') + ", " + results[y].get('state');
+                console.log("DEBUG: " + full_address);
+                // geocode the address that was given to us
+                GMaps.geocode({
+                  address: full_address,
+                  callback: function(geocode, status) {
+                    if (status == 'OK') {
+                      // success, remember the lat and lon
+                      var latlng = geocode[0].geometry.location;
+                      console.log("DEBUG: geocode success");
+                      // create the parse geopoint
+                      var gpoint = new Parse.GeoPoint({latitude: latlng.lat(), longitude: latlng.lng()});
+                      // save everything to parse
+                      results[y].set("lat", latlng.lat());
+                      results[y].set("lon", latlng.lng());
+                      results[y].set("geopoint", gpoint);
+                      results[y].save(null, {
+                        success: function(record) {
+                          console.log("DEBUG: parse save success");
+                        },
+                        error: function(record, error) {
+                          console.log("DEBUG: parse save error");
+                        }
+                      });
+                    }
+                  }
+                });
+              })(i);
+            }
+          },
+          error: function(results, error) {
+            console.log("DEBUG: parse query error");
+          }
+        });
+      }
+      </script>
+    </head>
+    <body>
+      <h1>Geocode</h1>
+      <h3>Don't forget to open the console before clicking...</h3>
+      <form action="#" method="post">
+        <input type="button" value="Do It" onClick="bulkgeocode()">
+      </form>
+    </body>
+</html>

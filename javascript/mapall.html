@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Inspections</title>
+
+    <!-- jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+    <!-- custom styles -->
+    <link rel="stylesheet" href="custom.css" />
+
+    <!-- google maps js -->
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js"></script>
+    <script type="text/javascript" src="gmaps.js"></script>
+
+    <!-- parse js -->
+    <script src="https://www.parsecdn.com/js/parse-1.3.5.min.js"></script>
+
+    <script>
+
+      function searchall() {
+
+        // setup the map
+        var map;
+        map = new GMaps({
+          div: '#map',
+          lat: 32.231864,
+          lng: -110.953878
+        });
+        map.setZoom(11);
+
+        // initialize parse - application_id, javascript_key
+        Parse.initialize("APPLICATION_KEY", "JAVASCRIPT_KEY");
+
+        // parse class
+        var row = Parse.Object.extend("PARSE_CLASS");
+
+        // query parse and get all the addresses to map
+        var query = new Parse.Query(row);
+
+        // increase the number of allowed results
+        query.limit(150);
+
+        query.find({
+          success: function(results) {
+            // parse returned at least one address, loop through them
+            for (var i = 0; i < results.length; i++) {
+
+              map.addMarker({
+                lat: results[i].get('lat'),
+                lng: results[i].get('lon'),
+                title: results[i].get('name'),
+                infoWindow: {
+                  content: '<div class="marker"><h4>' + results[i].get('name') + '</h4><p>' + results[i].get('address') + '<br>Grade: ' + results[i].get('grade') + '</p></div>'
+                },
+                icon: ('//maps.google.com/mapfiles/ms/icons/green-dot.png')
+              });
+            }
+          },
+          error: function(results, error) {
+            console.log("DEBUG: parse query error");
+          }
+        });
+      }
+    </script>
+  </head>
+  <body onload="searchall();">
+    <h1>Health inspections</h1>
+    <div id="map"></div>
+  </body>
+</html>
