@@ -4,10 +4,10 @@
 
 ### Twitter
 
-[https://dev.twitter.com/overview/documentation](Twitter API docs)
+[Twitter API docs](https://dev.twitter.com/overview/documentation)
 
-[https://apps.twitter.com/](Register your app with Twitter)
+[Register your app with Twitter](https://apps.twitter.com/)
 
-[https://github.com/sferik/twitter/blob/master/examples/AllTweets.md](Example: Get all Tweets for a specific user)
+[Example: Get all Tweets for a specific user](https://github.com/sferik/twitter/blob/master/examples/AllTweets.md)
 
-[https://github.com/sferik/twitter/blob/master/examples/Search.md](Example: Search Twitter stream)
+[Example: Search Twitter stream](https://github.com/sferik/twitter/blob/master/examples/Search.md)
